@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новостной Портал</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            border-bottom: #77aaff 3px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 24px;
+            flex: 1;
+        }
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+            margin: 0 10px;
+            padding: 5px 10px;
+        }
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .menu-toggle div {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            margin: 4px;
+        }
+        .news-list {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .news-item {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .news-item h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .news-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .news-item p {
+            flex-grow: 1;
+        }
+        .news-item a {
+            margin-top: auto;
+            display: inline-block;
+            padding: 10px 15px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+            }
+            nav a {
+                margin: 10px 0;
+                text-align: center;
+            }
+            nav.active {
+                display: flex;
+            }
+            .news-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                Новостной Портал
+            </div>
+            <div class="menu-toggle" id="mobile-menu">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <nav id="nav-menu">
+                <a href="#">Главная</a>
+                <a href="#">Категории</a>
+                <a href="#">Контакты</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container news-list" id="news-list">
+        <!-- Новости будут загружены сюда -->
+    </div>
+
+    <script>
+        async function fetchRSS(url) {
+            const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+            const data = await response.json();
+            return data.items;
+        }
+
+        function displayNews(newsItems) {
+            const newsList = document.getElementById('news-list');
+            newsList.innerHTML = '';
+            newsItems.forEach(item => {
+                const newsItem = document.createElement('div');
+                newsItem.classList.add('news-item');
+
+                // Extract image URL if available
+                const imageUrl = item.enclosure ? item.enclosure.link : null;
+
+                newsItem.innerHTML = `
+                    <h2>${item.title}</h2>
+                    <p>${item.pubDate}</p>
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.title}">` : ''}
+                    <p>${item.contentSnippet}</p>
+                    <a href="${item.link}" target="_blank">Читать далее</a>
+                `;
+                newsList.appendChild(newsItem);
+            });
+        }
+
+        window.onload = function() {
+            const rssUrl = 'https://rss.app/feeds/1hmaT3fCCa9uREHB.xml'; // Ваша RSS ссылка
+            fetchRSS(rssUrl).then(displayNews);
+
+            const menuToggle = document.getElementById('mobile-menu');
+            const navMenu = document.getElementById('nav-menu');
+
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        }
+    </script>
+</body>
+</html>

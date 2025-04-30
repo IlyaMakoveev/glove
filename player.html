@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плеер Яндекс.Музыки</title>
+    <style>
+        .player-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 340px;
+            height: 200px;
+            border-radius: 12px;
+            overflow: visible;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .player-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 480px) {
+            .player-container {
+                width: calc(100% - 32px);
+                right: 16px;
+                bottom: 16px;
+                height: 180px;
+            }
+        }
+
+        /* Кнопка закрытия */
+        .close-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .close-btn::before,
+        .close-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 14px;
+            height: 2px;
+            background: #333;
+            transform: translate(-50%, -50%);
+        }
+
+        .close-btn::before { transform: translate(-50%, -50%) rotate(45deg); }
+        .close-btn::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+        /* Кнопка открытия */
+        .open-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #FF0000;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255,0,0,0.3);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <button class="open-btn" id="openBtn">♪ Открыть</button>
+    
+    <div class="player-container" id="player">
+        <div class="close-btn" id="closeBtn"></div>
+        <iframe class="player-iframe"
+                src="https://music.yandex.ru/iframe/playlist/ilya@ya.makoveev.info/1056"
+                allow="autoplay"
+                loading="eager">
+        </iframe>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const openBtn = document.getElementById('openBtn');
+        const closeBtn = document.getElementById('closeBtn');
+
+        // Изначально плеер открыт
+        openBtn.style.display = 'none';
+
+        closeBtn.addEventListener('click', () => {
+            player.style.display = 'none';
+            openBtn.style.display = 'block';
+        });
+
+        openBtn.addEventListener('click', () => {
+            player.style.display = 'block';
+            openBtn.style.display = 'none';
+        });
+
+        // Закрытие при клике вне области
+        document.addEventListener('click', (e) => {
+            if (!player.contains(e.target) && e.target !== openBtn) {
+                player.style.display = 'none';
+                openBtn.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
